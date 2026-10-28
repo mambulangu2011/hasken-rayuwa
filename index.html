@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="ha">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HASKEN RAYUWA V1.0 - Hasken Mata - Menu da Ma'ana</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:system-ui;background:#fdf2f8;color:#4a044e;display:flex;min-height:100vh}
+.sidebar{width:300px;background:linear-gradient(180deg,#831843,#be185d);color:#fce7f3;position:fixed;height:100vh;overflow-y:auto;transition:0.3s;z-index:20}
+.sidebar h2{padding:20px 16px 10px;font-size:18px;border-bottom:1px solid #9d174d}
+.menu-btn{display:block;width:100%;text-align:left;padding:14px 16px;background:none;border:none;color:#fce7f3;cursor:pointer;border-bottom:1px solid rgba(255,255,255,0.08);line-height:1.4}
+.menu-btn:hover,.menu-btn.active{background:#9d174d;color:white}
+.menu-btn small{display:block;font-size:11px;opacity:0.8;margin-top:2px}
+.main{margin-left:300px;flex:1;padding:20px;max-width:900px}
+.topbar{display:flex;justify-content:space-between;align-items:center;background:white;padding:12px 16px;border-radius:12px;box-shadow:0 2px 10px rgba(0,0,0,0.08);margin-bottom:16px;position:sticky;top:10px;z-index:10}
+.content-card{background:white;border-radius:16px;padding:24px;box-shadow:0 4px 20px rgba(0,0,0,0.08);line-height:1.8}
+.content-card h1{font-size:26px;margin-bottom:6px;color:#831843}
+.subtitle{color:#be185d;margin-bottom:12px;font-size:13px;font-weight:600}
+.meaning-box{background:#fdf2f8;border:1px solid #f9a8d4;padding:14px;border-radius:12px;margin:14px 0}
+.meaning-box h4{color:#831843;margin-bottom:6px}
+.page-content{font-size:16px;white-space:pre-line}
+.controls{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px;padding-top:16px;border-top:1px solid #fce7f3}
+.btn{padding:10px 14px;border-radius:10px;border:1px solid #f9a8d4;background:#fdf2f8;font-weight:700;cursor:pointer;font-size:13px}
+.btn-primary{background:#be185d;color:white;border-color:#be185d}
+.btn-audio{background:#831843;color:white;border-color:#831843}
+.audio-bar{background:#fce7f3;border:1px solid #f9a8d4;padding:10px 14px;border-radius:10px;margin-top:14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.mobile-toggle{display:none;position:fixed;top:12px;left:12px;z-index:30;background:#831843;color:white;padding:10px 14px;border-radius:8px;border:none}
+.search{padding:10px 16px} .search input{width:100%;padding:10px;border-radius:8px;border:1px solid #9d174d;background:#4a044e;color:white}
+.progress{height:6px;background:#fce7f3;border-radius:10px;margin-top:12px;overflow:hidden}
+.progress-fill{height:100%;background:#be185d;width:0%;transition:0.3s}
+@media(max-width:850px){
+.sidebar{transform:translateX(-100%)} .sidebar.open{transform:translateX(0)}
+.main{margin-left:0;padding-top:60px} .mobile-toggle{display:block}
+}
+</style>
+</head>
+<body>
+<button class="mobile-toggle" onclick="document.querySelector('.sidebar').classList.toggle('open')">☰ Menu</button>
+<div class="sidebar" id="sidebar">
+<h2>🌸 HASKEN RAYUWA<br><small style="font-size:12px;opacity:0.9">Hasken Mata - V1.0</small></h2>
+<div class="search"><input id="search" placeholder="Nemi menu... Ilimi, Lafiya" oninput="filterMenu()"></div>
+<div id="menu-list"></div>
+</div>
+<div class="main">
+<div class="topbar">
+<div><b id="currentTitle">Barka da Zuwa - Hasken Rayuwa</b><br><small id="currentMeta" style="color:#be185d">Zaɓi Menu a gefe - Ka karanta ma'ana</small></div>
+<div style="display:flex;gap:6px"><button class="btn" onclick="prev()">◀</button><button class="btn btn-primary" onclick="next()">▶</button></div>
+</div>
+<div class="content-card">
+<h1 id="pageTitle">HASKEN RAYUWA - Hasken Mata</h1>
+<div class="subtitle" id="pageSubtitle">Littafi mai Menu da Ma'ana - Ga Mata</div>
+<div class="audio-bar">
+<button class="btn btn-audio" id="audioBtn" onclick="toggleAudio()">▶️ Karanta Da Murya</button>
+<span id="audioStatus" style="font-size:12px">Danna don ji ma'anar da murya</span>
+<select id="voiceSelect" style="margin-left:auto;padding:6px;border-radius:6px;font-size:12px"><option>Zaɓi Murya</option></select>
+</div>
+<div class="meaning-box" id="meaningBox"><h4>📖 Ma'anar Wannan Menu:</h4><div id="meaningText">Zaɓi menu a gefe</div></div>
+<div class="page-content" id="pageContent">Sannu da zuwa HASKEN RAYUWA! A gefe akwai Menu 12+ - Danna kowane - Za ka ga ma'anarsa!</div>
+<div class="progress"><div class="progress-fill" id="progressFill"></div></div>
+<div class="controls">
+<button class="btn btn-audio" onclick="toggleAudio()">🔊 Kunna Murya</button>
+<button class="btn" onclick="changeSpeed(-0.1)">🐢</button>
+<button class="btn" onclick="changeSpeed(0.1)">🐇</button>
+<button class="btn btn-primary" onclick="next()">Gaba ▶</button>
+</div>
+</div>
+</div>
+<script>
+const menus = [
+{title:"1. Gabatarwa - Hasken Rayuwa",small:"Ma'anar Hasken Rayuwa da manufarta",meaning:"Wannan sashe yana bayyana ma'anar HASKEN RAYUWA - Wato hasken da ke haskaka rayuwar mace ta hanyar ilimi, imani, da aiki.",content:"Bismillah. HASKEN RAYUWA ma'anarsa: Haske ne da ke nuna wa mace hanya. A zamanin nan mace tana bukatar ilimi uku: Ilimin Addini, Ilimin Zaman Takewa, da Ilimin Neman Kudi. Wannan App zai baki ukun.\n\nAbin da ya kunsa: Gabatarwa, manufa, yadda za ki amfani da App din kowace rana.\n\nAiki na yau: Ki rubuta burinki 3 da kike so ki cimma a shekara 1."},
+{title:"2. Ilimi - Makaranta da Karatu",small:"Me yasa ilimi yake da muhimmanci ga mace?",meaning:"Ilimi shi ne ginshikin rayuwa. Mace mai ilimi tana iya tarbiyar yara masu kyau, gudanar da kasuwanci, da kare kanta.",content:"Ma'anar Ilimi: Ilimi ba takardar makaranta bane kawai, ilimi fahimta ce.\n\nMe ya kunsa:\n- Yadda za ki karanta littattafai a gida\n- App na karatu kyauta\n- Yadda za ki koya wa yara karatu\n\nDarasi: Ki ware minti 30 kowace rana don karatu."},
+{title:"3. Lafiya - Jikin Mace da Yara",small:"Lafiyar mace, ciki, haihuwa, da yara",meaning:"Lafiya ita ce komai. Wannan sashe yana koya miki yadda za ki kula da lafiyarki, lafiyar ciki, haihuwa, shayarwa.",content:"Ma'anar Lafiya: Idan jiki lafiya, zuciya lafiya.\n\nAbin da ya kunsa:\n- Abinci mai gina jiki\n- Kula da ciki da haihuwa\n- Yadda za ki shayar da jariri\n\nAiki: Ki sha ruwa lita 2 kowace rana."},
+{title:"4. Jari da Kasuwanci",small:"Yadda mace za ta samu kudi a gida",meaning:"Mace za ta iya samun kudi bata fita daga gida ba. Wannan menu yana da ra'ayoyin kasuwanci 20+ ga mata.",content:"Ma'anar Jari: Kudi ba namiji kadai ke nemo shi ba. Matarsa Khadija (RA) attajira ce.\n\nMe ya kunsa:\n- Kasuwancin kayan abinci, turare\n- Yadda za ki sayar a WhatsApp\n- KASUWA GLOBAL\n\nRa'ayi na yau: Fara da N5000 - Sayo gyada, soya, saida."},
+{title:"5. Girke-girke",small:"Girke-girke 50+ na Hausa",meaning:"Abinci shi ne soyayya. Mace mai girki mai dadi tana riqe gida.",content:"Me ya kunsa:\n- Tuwo, Miya, Jollof\n- Cake, Meatpie\n- Abinci na yara\n\nGirki na yau: Shinkafa da wake da man gyada."},
+{title:"6. Tarbiyar Yara",small:"Sirrin tarbiyar yara",meaning:"Yara su ne goben mu. Tarbiya mai kyau tana farawa tun suna jariri.",content:"Abin da ya kunsa:\n- Yadda za ki koya wa yaro addu'a\n- Ladabi da gaisuwa\n- Labarun bacci\n\nAiki: Ki kwanta da yarki ki bashi labari 1."},
+{title:"7. Zaman Aure",small:"Sirrin zaman aure mai dadi",meaning:"Aure ibada ne. Wannan sashe yana magana ne akan yadda za ki zauna da mijinki lafiya.",content:"Me ya kunsa:\n- Hakkin mace da na namiji\n- Yadda za ki magance kishi\n- Addu'o'in zaman lafiya\n\nSirri: Ki yi murmushi idan mijinki ya dawo gida."},
+{title:"8. Shawara Sirri",small:"Ki tambayi sirri - Za a amsa miki",meaning:"Wannan wuri ne na sirri - Mace za ta iya tambayar komai da ke damunta.",content:"Me ya kunsa:\n- Tambayoyi akan aure\n- Tambayoyi akan lafiya\n- Lambobin waya na likitoci mata\n\nKa'ida: Sirrinka sirrinmu ne."},
+{title:"9. Tufafi da Kwalliya",small:"Yadda za ki yi kwalliya cikin mutunci",meaning:"Mace tana son kyau. Wannan sashe yana koya miki yadda za ki yi ado cikin tsari na addini.",content:"Me ya kunsa:\n- Yadda za ki hada atamfa\n- Kwalliya mai sauki\n- Turare mai dadi\n\nAiki: Ki ware kwana 1 a mako don gyara kanki."},
+{title:"10. Addu'o'i da Azkar",small:"Addu'o'in mace a kowace rana",meaning:"Addu'a ita ce makamin muminai. Wannan sashe yana da addu'o'in da mace take bukata kowace rana.",content:"Me ya kunsa:\n- Addu'ar safiya da yamma\n- Addu'ar zaman lafiya\n- Yasin da Waqia\n\nKaranta: SubhanAllah 33, Alhamdulillah 33."},
+{title:"11. Zamani da Waya",small:"Wayar salula - Alheri ko sharri?",meaning:"Wayar salula tana iya zama makaranta ko kuma makabarta. Wannan sashe yana koya miki yadda za ki amfani da waya wajen ilimi.",content:"Me ya kunsa:\n- Yadda za ki toshe shafuka marasa kyau\n- App masu amfani\n- Yadda za ki samu kudi ta TikTok\n\nKa'ida: Kar ki kwanta da waya a hannu."},
+{title:"12. Gida da Tsafta",small:"Sirrin gida mai kyau da tsafta",meaning:"Gida mai tsafta zuciya mai tsafta. Wannan sashe yana koya miki yadda za ki tsara gida.",content:"Me ya kunsa:\n- Tsarin tsaftace gida\n- Yadda za ki wanke kaya\n- Yadda za ki sa gida kamshi\n\nSirri: Ki tashi da sassafe - Ki yi addu'a - Ki share gida."}
+];
+let current=0, synth=window.speechSynthesis, utter=null, speed=1, isPlaying=false;
+function renderMenu(filter=""){
+ let list=document.getElementById('menu-list');
+ list.innerHTML=menus.filter(m=> filter==="" || m.title.toLowerCase().includes(filter.toLowerCase())).map((m,idx)=>{
+   let realIdx=menus.indexOf(m);
+   return `<button class="menu-btn ${realIdx===current?'active':''}" onclick="goTo(${realIdx})">${m.title}<small>${m.small}</small></button>`
+ }).join('');
+}
+function goTo(idx){current=idx;document.querySelector('.sidebar').classList.remove('open');show();}
+function show(){
+ let m=menus[current];
+ document.getElementById('pageTitle').textContent=m.title;
+ document.getElementById('currentTitle').textContent=m.title;
+ document.getElementById('currentMeta').textContent=m.small;
+ document.getElementById('pageSubtitle').textContent="Menu "+(current+1)+" / "+menus.length;
+ document.getElementById('meaningText').textContent=m.meaning;
+ document.getElementById('pageContent').textContent=m.content;
+ document.getElementById('progressFill').style.width=((current+1)/menus.length*100)+"%";
+ renderMenu(document.getElementById('search').value);
+ window.scrollTo(0,0);
+}
+function next(){if(current<menus.length-1){current++;show();if(isPlaying){stopAudio();setTimeout(()=>toggleAudio(),400);}}}
+function prev(){if(current>0){current--;show();if(isPlaying){stopAudio();setTimeout(()=>toggleAudio(),400);}}}
+function filterMenu(){renderMenu(document.getElementById('search').value);}
+function loadVoices(){let voices=synth.getVoices();let sel=document.getElementById('voiceSelect');sel.innerHTML=voices.map((v,i)=>`<option value="${i}">${v.name} (${v.lang})</option>`).join('');}
+if(synth.onvoiceschanged!==undefined) synth.onvoiceschanged=loadVoices; setTimeout(loadVoices,500);
+function toggleAudio(){
+ if(isPlaying){stopAudio();return;}
+ let text=menus[current].title+" . "+menus[current].meaning+" . "+menus[current].content;
+ utter=new SpeechSynthesisUtterance(text);
+ let voices=synth.getVoices(); let sel=document.getElementById('voiceSelect'); if(voices[sel.value]) utter.voice=voices[sel.value];
+ utter.rate=speed; utter.onstart=()=>{isPlaying=true;document.getElementById('audioBtn').textContent='⏹️ Dakata';document.getElementById('audioStatus').textContent='🔊 Ana karantawa...';};
+ utter.onend=()=>{isPlaying=false;document.getElementById('audioBtn').textContent='▶️ Karanta Da Murya';document.getElementById('audioStatus').textContent='An gama!'; if(current<menus.length-1){setTimeout(()=>{next();toggleAudio();},1200);}};
+ synth.speak(utter);
+}
+function stopAudio(){synth.cancel();isPlaying=false;document.getElementById('audioBtn').textContent='▶️ Karanta Da Murya';document.getElementById('audioStatus').textContent='An dakata';}
+function changeSpeed(d){speed=Math.max(0.5,Math.min(2,speed+d));document.getElementById('audioStatus').textContent='Gudun: '+speed.toFixed(1)+'x'; if(isPlaying){stopAudio();setTimeout(toggleAudio,300);}}
+renderMenu(); show();
+</script>
+</body>
+</html>
